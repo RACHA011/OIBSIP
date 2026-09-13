@@ -1,0 +1,195 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Dashboard - Library System</title>
+    <th:block
+      th:replace="~{fragments/tailwind-head :: tailwind-setup}"
+    ></th:block>
+  </head>
+  <body class="flex min-h-screen bg-background">
+    <div
+      th:replace="~{fragments/member-sidebar :: sidebar(active='dashboard')}"
+    ></div>
+    <main class="flex-1 space-y-6 p-8">
+      <div
+        th:replace="~{fragments/topbar :: topbar(userName=${currentUserName})}"
+      ></div>
+      <div>
+        <h1
+          class="font-display text-2xl font-bold text-foreground"
+          th:text="'Welcome back, ' + ${user.fullName}"
+        ></h1>
+        <p class="mt-1 text-sm text-muted-foreground">
+          Here is your library activity.
+        </p>
+      </div>
+
+      <p
+        th:if="${error}"
+        class="rounded-xl bg-destructive-soft px-4 py-3 text-sm font-medium text-destructive"
+        th:text="${error}"
+      ></p>
+
+      <div class="rounded-3xl bg-card p-6 shadow-soft">
+        <h2 class="mb-4 font-display text-lg font-bold text-foreground">
+          My Issued Books
+        </h2>
+
+        <div
+          th:if="${#lists.isEmpty(myIssuedBooks)}"
+          class="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground"
+        >
+          You have no issued books right now.
+        </div>
+        <table
+          th:unless="${#lists.isEmpty(myIssuedBooks)}"
+          class="w-full border-collapse text-left"
+        >
+          <thead>
+            <tr class="border-b border-border">
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Title
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Issue Date
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Due Date
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Fine
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              th:each="record : ${myIssuedBooks}"
+              class="border-b border-border last:border-0"
+            >
+              <td
+                class="px-4 py-3 text-sm font-semibold text-foreground"
+                th:text="${record.book.title}"
+              ></td>
+              <td
+                class="px-4 py-3 text-sm text-foreground"
+                th:text="${record.issueDate}"
+              ></td>
+              <td
+                class="px-4 py-3 text-sm text-foreground"
+                th:text="${record.dueDate}"
+              ></td>
+              <td
+                class="px-4 py-3 text-sm text-foreground"
+                th:text="${record.fineAmount > 0 ? ('R' + record.fineAmount) : '-'}"
+              ></td>
+              <td class="px-4 py-3">
+                <form
+                  th:action="@{'/user/return/' + ${record.id}}"
+                  method="post"
+                >
+                  <button
+                    type="submit"
+                    class="inline-flex items-center justify-center rounded-full border border-border bg-transparent px-4 py-2 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
+                  >
+                    Return
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="rounded-3xl bg-card p-6 shadow-soft">
+        <h2 class="mb-4 font-display text-lg font-bold text-foreground">
+          My Reservations
+        </h2>
+
+        <div
+          th:if="${#lists.isEmpty(myReservations)}"
+          class="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground"
+        >
+          You have no reservations right now.
+        </div>
+        <table
+          th:unless="${#lists.isEmpty(myReservations)}"
+          class="w-full border-collapse text-left"
+        >
+          <thead>
+            <tr class="border-b border-border">
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Title
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Reserved On
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Status
+              </th>
+              <th
+                class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+              >
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              th:each="res : ${myReservations}"
+              class="border-b border-border last:border-0"
+            >
+              <td
+                class="px-4 py-3 text-sm font-semibold text-foreground"
+                th:text="${res.book.title}"
+              ></td>
+              <td
+                class="px-4 py-3 text-sm text-foreground"
+                th:text="${res.reservationDate}"
+              ></td>
+              <td class="px-4 py-3">
+                <span
+                  th:class="${res.status.name() == 'READY_FOR_PICKUP'} ? 'inline-flex items-center rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary' : (${res.status.name() == 'FULFILLED'} ? 'inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-muted-foreground' : 'inline-flex items-center rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning')"
+                  th:text="${res.status.name() == 'READY_FOR_PICKUP'} ? 'Ready for pickup' : (${res.status.name() == 'PENDING'} ? 'Pending' : (${res.status.name() == 'FULFILLED'} ? 'Fulfilled' : 'Cancelled'))"
+                ></span>
+              </td>
+              <td class="px-4 py-3">
+                <form
+                  th:if="${res.status.name() == 'READY_FOR_PICKUP'}"
+                  th:action="@{'/user/pickup/' + ${res.id}}"
+                  method="post"
+                >
+                  <button
+                    type="submit"
+                    class="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+                  >
+                    Issue Now
+                  </button>
+                </form>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </body>
+</html>

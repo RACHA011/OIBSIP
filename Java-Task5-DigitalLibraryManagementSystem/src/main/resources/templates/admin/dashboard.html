@@ -1,0 +1,58 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard - Library System</title>
+    <th:block
+      th:replace="~{fragments/tailwind-head :: tailwind-setup}"
+    ></th:block>
+  </head>
+  <body class="flex min-h-screen bg-background">
+    <div
+      th:replace="~{fragments/admin-sidebar :: sidebar(active='dashboard')}"
+    ></div>
+    <main class="flex-1 space-y-6 p-8">
+      <div
+        th:replace="~{fragments/topbar :: topbar(userName=${currentUserName})}"
+      ></div>
+      <div>
+        <h1 class="font-display text-2xl font-bold text-foreground">
+          Admin Dashboard
+        </h1>
+        <p class="mt-1 text-sm text-muted-foreground">
+          A snapshot of the library today.
+        </p>
+      </div>
+
+      <div class="grid gap-5 sm:grid-cols-3">
+        <div class="rounded-3xl bg-card p-6 shadow-soft">
+          <p
+            class="font-display text-4xl font-bold tracking-tight text-foreground"
+            th:text="${totalBooks}"
+          ></p>
+          <p class="mt-2 text-sm font-medium text-muted-foreground">
+            Total Book Titles
+          </p>
+        </div>
+        <div class="rounded-3xl bg-card p-6 shadow-soft">
+          <p
+            class="font-display text-4xl font-bold tracking-tight text-foreground"
+            th:text="${totalMembers}"
+          ></p>
+          <p class="mt-2 text-sm font-medium text-muted-foreground">
+            Registered Members
+          </p>
+        </div>
+        <div class="rounded-3xl bg-card p-6 shadow-soft">
+          <p
+            class="font-display text-4xl font-bold tracking-tight text-foreground"
+            th:text="${currentlyIssued}"
+          ></p>
+          <p class="mt-2 text-sm font-medium text-muted-foreground">
+            Books Currently Issued
+          </p>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

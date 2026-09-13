@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Library System</title>
+    <th:block th:replace="~{fragments/tailwind-head :: tailwind-setup}"></th:block>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-background px-4">
+<div class="w-full max-w-md rounded-3xl bg-card p-8 shadow-soft">
+    <h1 class="font-display text-2xl font-bold text-foreground">Welcome back</h1>
+    <p class="mt-1 text-sm text-muted-foreground">Log in to your library account.</p>
+
+    <p th:if="${error}" class="mt-5 rounded-xl bg-destructive-soft px-4 py-3 text-sm font-medium text-destructive" th:text="${error}"></p>
+    <p th:if="${success}" class="mt-5 rounded-xl bg-primary-soft px-4 py-3 text-sm font-medium text-primary" th:text="${success}"></p>
+
+    <form th:action="@{/login}" method="post" class="mt-6 space-y-4">
+        <div>
+            <label class="mb-2 block text-sm font-semibold text-foreground">Email</label>
+            <input type="email" name="email" required
+                   class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+        </div>
+        <div>
+            <label class="mb-2 block text-sm font-semibold text-foreground">Password</label>
+            <input type="password" name="password" required
+                   class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+        </div>
+        <button type="submit" class="w-full rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">Log In</button>
+    </form>
+
+    <p class="mt-6 text-center text-sm text-muted-foreground">
+        Don't have an account? <a th:href="@{/register}" class="font-semibold text-primary hover:underline">Register</a>
+    </p>
+    <p class="mt-4 rounded-xl bg-secondary px-4 py-3 text-center text-xs text-muted-foreground">
+        Demo admin login: admin@library.com / admin123
+    </p>
+</div>
+</body>
+</html>

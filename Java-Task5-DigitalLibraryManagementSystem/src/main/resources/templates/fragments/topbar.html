@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="topbar(userName)" class="mb-6 flex items-center justify-end rounded-3xl bg-card px-6 py-4 shadow-soft">
+    <div class="flex items-center gap-3">
+        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary"
+             th:text="${#strings.isEmpty(userName)} ? '?' : ${#strings.substring(userName, 0, 1)}"></div>
+        <span class="text-sm font-semibold text-foreground" th:text="${userName}"></span>
+    </div>
+</div>
+</body>
+</html>

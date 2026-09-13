@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Books - Library System</title>
+    <th:block th:replace="~{fragments/tailwind-head :: tailwind-setup}"></th:block>
+</head>
+<body class="flex min-h-screen bg-background">
+<div th:replace="~{fragments/admin-sidebar :: sidebar(active='books')}"></div>
+<main class="flex-1 space-y-6 p-8">
+    <div
+        th:replace="~{fragments/topbar :: topbar(userName=${currentUserName})}"
+      ></div>
+    <div class="flex flex-wrap items-center justify-between gap-3 ">
+        <div>
+            <h1 class="font-display text-2xl font-bold text-foreground">Books</h1>
+            <p class="mt-1 text-sm text-muted-foreground">Everything on the shelves.</p>
+        </div>
+        <a th:href="@{/admin/books/new}"
+           class="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">
+            + Add New Book
+        </a>
+    </div>
+
+    <div class="rounded-3xl bg-card p-6 shadow-soft">
+        <table class="w-full border-collapse text-left">
+            <thead>
+            <tr class="border-b border-border">
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Title</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Author</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">ISBN</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Category</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Available</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Total</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}" class="border-b border-border last:border-0">
+                <td class="px-4 py-3 text-sm font-semibold text-foreground" th:text="${book.title}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${book.author}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${book.isbn}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${book.category}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${book.availableQuantity}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${book.totalQuantity}"></td>
+                <td class="px-4 py-3">
+                    <div class="flex items-center gap-3">
+                        <a th:href="@{'/admin/books/edit/' + ${book.id}}" class="text-sm font-semibold text-primary hover:underline">Edit</a>
+                        <form th:action="@{'/admin/books/delete/' + ${book.id}}" method="post">
+                            <button type="submit" onclick="return confirm('Delete this book?')"
+                                    class="rounded-full bg-destructive px-4 py-2 text-sm font-semibold text-destructive-foreground transition-colors hover:bg-destructive/90">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

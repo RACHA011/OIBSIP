@@ -3,11 +3,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * this class manages the connection to the MySQL database and provides methods to interact with it.
+ * it was not 
+ */
 public class DatabaseManager {
     // TODO: update these to match your local MySQL setup
     private static final String URL = "jdbc:mysql://localhost:3306/atm_db?useSSL=false&serverTimezone=UTC";
-    private static final String USERNAME = "racha";
-    private static final String PASSWORD = "password";
+    private static final String USERNAME = "racha"; // username for your MySQL server
+    private static final String PASSWORD = "password"; // password for your MySQL server
 
     private Connection connection;
 

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Issued Books - Library System</title>
+    <th:block th:replace="~{fragments/tailwind-head :: tailwind-setup}"></th:block>
+</head>
+<body class="flex min-h-screen bg-background">
+<div th:replace="~{fragments/admin-sidebar :: sidebar(active='issued')}"></div>
+<main class="flex-1 space-y-6 p-8">
+    <div
+        th:replace="~{fragments/topbar :: topbar(userName=${currentUserName})}"
+      ></div>
+    <div>
+        <h1 class="font-display text-2xl font-bold text-foreground">Issued Books</h1>
+        <p class="mt-1 text-sm text-muted-foreground">Every copy currently out on loan.</p>
+    </div>
+
+    <div class="rounded-3xl bg-card p-6 shadow-soft">
+        <table class="w-full border-collapse text-left">
+            <thead>
+            <tr class="border-b border-border">
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Book</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Member</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Issue Date</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Due Date</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fine</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="record : ${issuedRecords}" class="border-b border-border last:border-0">
+                <td class="px-4 py-3 text-sm font-semibold text-foreground" th:text="${record.book.title}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${record.user.fullName}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${record.issueDate}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${record.dueDate}"></td>
+                <td class="px-4 py-3">
+                    <span class="mr-2 text-sm font-semibold text-foreground" th:text="'R' + ${record.fineAmount}"></span>
+                    <span th:if="${record.fineAmount > 0}"
+                          th:class="${record.finePaid} ? 'inline-flex items-center rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary' : 'inline-flex items-center rounded-full bg-warning-soft px-3 py-1 text-xs font-semibold text-warning'"
+                          th:text="${record.finePaid} ? 'Paid' : 'Unpaid'"></span>
+                </td>
+                <td class="px-4 py-3">
+                    <form th:if="${record.fineAmount > 0 and !record.finePaid}" th:action="@{'/admin/fines/' + ${record.id} + '/pay'}" method="post">
+                        <button type="submit" class="rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">Mark Fine Paid</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <p th:if="${#lists.isEmpty(issuedRecords)}" class="rounded-2xl border border-dashed border-border p-8 text-center text-sm text-muted-foreground">No books are currently issued.</p>
+    </div>
+</main>
+</body>
+</html>

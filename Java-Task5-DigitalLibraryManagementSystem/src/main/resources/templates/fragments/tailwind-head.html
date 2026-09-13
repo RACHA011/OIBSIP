@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head></head>
+<body>
+<th:block th:fragment="tailwind-setup">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'var(--background)',
+                        foreground: 'var(--foreground)',
+                        card: 'var(--card)',
+                        'card-foreground': 'var(--card-foreground)',
+                        primary: 'var(--primary)',
+                        'primary-foreground': 'var(--primary-foreground)',
+                        'primary-soft': 'var(--primary-soft)',
+                        secondary: 'var(--secondary)',
+                        'secondary-foreground': 'var(--secondary-foreground)',
+                        muted: 'var(--muted)',
+                        'muted-foreground': 'var(--muted-foreground)',
+                        accent: 'var(--accent)',
+                        'accent-foreground': 'var(--accent-foreground)',
+                        destructive: 'var(--destructive)',
+                        'destructive-foreground': 'var(--destructive-foreground)',
+                        'destructive-soft': 'var(--destructive-soft)',
+                        warning: 'var(--warning)',
+                        'warning-soft': 'var(--warning-soft)',
+                        border: 'var(--border)',
+                        input: 'var(--input)',
+                        ring: 'var(--ring)'
+                    },
+                    borderRadius: {
+                        sm: 'calc(var(--radius) - 4px)',
+                        md: 'calc(var(--radius) - 2px)',
+                        lg: 'var(--radius)',
+                        xl: 'calc(var(--radius) + 4px)',
+                        '2xl': 'calc(var(--radius) + 8px)',
+                        '3xl': 'calc(var(--radius) + 12px)',
+                        '4xl': 'calc(var(--radius) + 16px)'
+                    },
+                    boxShadow: {
+                        soft: '0 1px 2px oklch(0.2 0.03 250 / 0.04), 0 12px 32px oklch(0.2 0.03 250 / 0.06)'
+                    },
+                    fontFamily: {
+                        sans: ['DM Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        display: ['Space Grotesk', 'ui-sans-serif', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --radius: 0.75rem;
+            --background: oklch(0.971 0.003 250);
+            --foreground: oklch(0.21 0.02 260);
+            --card: oklch(1 0 0);
+            --card-foreground: oklch(0.21 0.02 260);
+            --primary: oklch(0.665 0.185 148);
+            --primary-foreground: oklch(0.995 0 0);
+            --primary-soft: oklch(0.945 0.055 150);
+            --warning: oklch(0.58 0.16 55);
+            --warning-soft: oklch(0.95 0.05 75);
+            --destructive-soft: oklch(0.95 0.035 22);
+            --secondary: oklch(0.965 0.005 250);
+            --secondary-foreground: oklch(0.21 0.02 260);
+            --muted: oklch(0.965 0.005 250);
+            --muted-foreground: oklch(0.55 0.02 258);
+            --accent: oklch(0.945 0.055 150);
+            --accent-foreground: oklch(0.35 0.12 150);
+            --destructive: oklch(0.577 0.245 27.325);
+            --destructive-foreground: oklch(0.984 0.003 247.858);
+            --border: oklch(0.925 0.008 255);
+            --input: oklch(0.925 0.008 255);
+            --ring: oklch(0.665 0.185 148);
+        }
+        body {
+            font-family: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+        }
+        h1, h2, h3 {
+            font-family: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+        }
+    </style>
+</th:block>
+</body>
+</html>

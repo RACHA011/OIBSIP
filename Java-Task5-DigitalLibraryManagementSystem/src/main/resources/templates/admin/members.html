@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Members - Library System</title>
+    <th:block th:replace="~{fragments/tailwind-head :: tailwind-setup}"></th:block>
+</head>
+<body class="flex min-h-screen bg-background">
+<div th:replace="~{fragments/admin-sidebar :: sidebar(active='members')}"></div>
+<main class="flex-1 space-y-6 p-8">
+    <div th:replace="~{fragments/topbar :: topbar(userName=${currentUserName})}"></div>
+    <div>
+        <h1 class="font-display text-2xl font-bold text-foreground">Members</h1>
+        <p class="mt-1 text-sm text-muted-foreground">Everyone registered with the library.</p>
+    </div>
+
+    <div class="rounded-3xl bg-card p-6 shadow-soft">
+        <table class="w-full border-collapse text-left">
+            <thead>
+            <tr class="border-b border-border">
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Name</th>
+                <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="m : ${members}" class="border-b border-border last:border-0">
+                <td class="px-4 py-3 text-sm font-semibold text-foreground" th:text="${m.fullName}"></td>
+                <td class="px-4 py-3 text-sm text-foreground" th:text="${m.email}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

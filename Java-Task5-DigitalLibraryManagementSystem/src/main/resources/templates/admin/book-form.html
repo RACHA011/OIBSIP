@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Form - Library System</title>
+    <th:block th:replace="~{fragments/tailwind-head :: tailwind-setup}"></th:block>
+</head>
+<body class="flex min-h-screen bg-background">
+<div th:replace="~{fragments/admin-sidebar :: sidebar(active='books')}"></div>
+<main class="flex-1 space-y-6 p-8">
+    <div
+        th:replace="~{fragments/topbar :: topbar(userName=${currentUserName})}"
+      ></div>
+    <div>
+        <h1 class="font-display text-2xl font-bold text-foreground" th:text="${book.id} != null ? 'Edit Book' : 'Add New Book'"></h1>
+        <p class="mt-1 text-sm text-muted-foreground">The same form is used when editing a book.</p>
+    </div>
+
+    <div class="rounded-3xl bg-card p-6 shadow-soft">
+        <form th:action="@{/admin/books/save}" th:object="${book}" method="post" class="max-w-xl space-y-4">
+            <input type="hidden" th:field="*{id}">
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-foreground">Title</label>
+                <input type="text" th:field="*{title}" required
+                       class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-foreground">Author</label>
+                <input type="text" th:field="*{author}" required
+                       class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-foreground">ISBN</label>
+                <input type="text" th:field="*{isbn}" required
+                       class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-foreground">Category</label>
+                <select th:field="*{category}" required
+                        class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+                    <option value="">Select a category</option>
+                    <option value="Fiction">Fiction</option>
+                    <option value="Non-Fiction">Non-Fiction</option>
+                    <option value="Science">Science</option>
+                    <option value="Technology">Technology</option>
+                    <option value="History">History</option>
+                </select>
+            </div>
+            <div>
+                <label class="mb-2 block text-sm font-semibold text-foreground">Total Quantity</label>
+                <input type="number" th:field="*{totalQuantity}" min="1" required
+                       class="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/25">
+            </div>
+            <button type="submit" class="rounded-full bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90">Save Book</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>
