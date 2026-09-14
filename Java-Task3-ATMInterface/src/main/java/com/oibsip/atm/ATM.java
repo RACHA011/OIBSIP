@@ -1,12 +1,23 @@
 package com.oibsip.atm;
+
 import java.sql.SQLException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ATM {
     private Bank bank;
     private DatabaseManager db;
     private Scanner scanner;
+
     private static final int MAX_ATTEMPTS = 3;
+    private static final int LOCKOUT_SECONDS = 30;
+
+    // In-memory only — a lockout doesn't need to survive restarting the app.
+    private Map<String, Integer> failedAttempts = new HashMap<>();
+    private Map<String, LocalDateTime> lockedUntil = new HashMap<>();
 
     public ATM(Bank bank, DatabaseManager db) {
         this.bank = bank;
@@ -26,7 +37,7 @@ public class ATM {
             }
 
             if (account == null) {
-                System.out.println("Too many incorrect attempts. Returning to start screen.\n");
+                // login() already explained why (wrong PIN, or locked) — just re-prompt.
                 continue;
             }
 
@@ -36,29 +47,64 @@ public class ATM {
         }
     }
 
+    // A single login attempt: one User ID prompt, one PIN prompt (unless locked).
+    // Returns the account on success, or null on any failure — the message
+    // explaining exactly what went wrong is printed here, not by the caller.
     private Account login() {
-        int attempts = 0;
-        while (attempts < MAX_ATTEMPTS) {
-            System.out.print("Enter User ID (or type 'quit' to exit): ");
-            String userId = scanner.nextLine().trim();
+        System.out.print("Enter User ID (or type 'quit' to exit): ");
+        String userId = scanner.nextLine().trim();
 
-            if (userId.equalsIgnoreCase("quit")) {
-                throw new ExitRequestedException();
+        if (userId.equalsIgnoreCase("quit")) {
+            throw new ExitRequestedException();
+        }
+
+        if (isLocked(userId)) {
+            System.out.println("This account is locked due to too many failed attempts. "
+                    + "Try again in " + secondsUntilUnlock(userId) + " second(s), or use a different account.");
+            return null;
+        }
+
+        System.out.print("Enter PIN: ");
+        String pin = scanner.nextLine().trim();
+
+        if (bank.accountExists(userId)) {
+            Account account = bank.getAccount(userId);
+            if (account.validatePin(pin)) {
+                failedAttempts.remove(userId);
+                lockedUntil.remove(userId);
+                return account;
             }
+        }
 
-            System.out.print("Enter PIN: ");
-            String pin = scanner.nextLine().trim();
-
-            if (bank.accountExists(userId)) {
-                Account account = bank.getAccount(userId);
-                if (account.validatePin(pin)) {
-                    return account;
-                }
-            }
-            attempts++;
-            System.out.println("Incorrect User ID or PIN. Attempts remaining: " + (MAX_ATTEMPTS - attempts));
+        recordFailedAttempt(userId);
+        if (isLocked(userId)) {
+            System.out.println(
+                    "Incorrect User ID or PIN. This account is now locked for " + LOCKOUT_SECONDS + " seconds.");
+        } else {
+            int remaining = MAX_ATTEMPTS - failedAttempts.getOrDefault(userId, 0);
+            System.out.println("Incorrect User ID or PIN. Attempts remaining before lockout: " + remaining);
         }
         return null;
+    }
+
+    private boolean isLocked(String userId) {
+        LocalDateTime until = lockedUntil.get(userId);
+        return until != null && LocalDateTime.now().isBefore(until);
+    }
+
+    private long secondsUntilUnlock(String userId) {
+        LocalDateTime until = lockedUntil.get(userId);
+        return Duration.between(LocalDateTime.now(), until).getSeconds() + 1;
+    }
+
+    private void recordFailedAttempt(String userId) {
+        int attempts = failedAttempts.getOrDefault(userId, 0) + 1;
+        if (attempts >= MAX_ATTEMPTS) {
+            lockedUntil.put(userId, LocalDateTime.now().plusSeconds(LOCKOUT_SECONDS));
+            failedAttempts.remove(userId); // fresh cycle once the lockout expires
+        } else {
+            failedAttempts.put(userId, attempts);
+        }
     }
 
     private void runMenu(Account account) {
