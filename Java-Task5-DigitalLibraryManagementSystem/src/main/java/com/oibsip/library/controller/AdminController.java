@@ -2,6 +2,7 @@ package com.oibsip.library.controller;
 
 import java.util.Optional;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,33 +76,41 @@ public class AdminController {
     }
 
     @PostMapping("/books/save")
-    public String saveBook(@ModelAttribute Book book) {
-        if (book.getId() != null) {
-            Optional<Book> existingOpt = bookService.findById(book.getId());
-            if (existingOpt.isPresent()) {
-                Book existing = existingOpt.get();
-                int delta = book.getTotalQuantity() - existing.getTotalQuantity();
+    public String saveBook(@ModelAttribute Book book, Model model) {
+        try {
+            if (book.getId() != null) {
+                Optional<Book> existingOpt = bookService.findById(book.getId());
+                if (existingOpt.isPresent()) {
+                    Book existing = existingOpt.get();
+                    int delta = book.getTotalQuantity() - existing.getTotalQuantity();
 
-                existing.setTitle(book.getTitle());
-                existing.setAuthor(book.getAuthor());
-                existing.setIsbn(book.getIsbn());
-                existing.setCategory(book.getCategory());
-                existing.setTotalQuantity(book.getTotalQuantity());
+                    existing.setTitle(book.getTitle());
+                    existing.setAuthor(book.getAuthor());
+                    existing.setIsbn(book.getIsbn());
+                    existing.setCategory(book.getCategory());
+                    existing.setTotalQuantity(book.getTotalQuantity());
 
-                if (delta > 0) {
-                    // New copies go through the same reservation-priority check as a
-                    // return, so anyone waiting on this book gets first claim.
-                    libraryService.increaseAvailability(existing, delta);
-                } else if (delta < 0) {
-                    existing.setAvailableQuantity(Math.max(0, existing.getAvailableQuantity() + delta));
-                    bookService.save(existing);
-                } else {
-                    bookService.save(existing);
+                    if (delta > 0) {
+                        // New copies go through the same reservation-priority check as a
+                        // return, so anyone waiting on this book gets first claim.
+                        libraryService.increaseAvailability(existing, delta);
+                    } else if (delta < 0) {
+                        existing.setAvailableQuantity(Math.max(0, existing.getAvailableQuantity() + delta));
+                        bookService.save(existing);
+                    } else {
+                        bookService.save(existing);
+                    }
                 }
+            } else {
+                book.setAvailableQuantity(book.getTotalQuantity());
+                bookService.save(book);
             }
-        } else {
-            book.setAvailableQuantity(book.getTotalQuantity());
-            bookService.save(book);
+        } catch (DataIntegrityViolationException e) {
+            // Most likely cause: the ISBN is already used by another book (unique
+            // constraint).
+            model.addAttribute("book", book);
+            model.addAttribute("error", "A book with this ISBN already exists. Please use a different ISBN.");
+            return "admin/book-form";
         }
         return "redirect:/admin/books";
     }
